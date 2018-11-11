@@ -27,4 +27,8 @@ public class AppProperties {
     public String getSesSecret() throws PropertiesFileNotFoundException, IOException {
         return this.getProperty.value("aws_ses_secret_key");
     }
+
+    public String secretToken() throws PropertiesFileNotFoundException, IOException {
+        return this.getProperty.value("super.secret.token");
+    }
 }

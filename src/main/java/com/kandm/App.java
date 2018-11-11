@@ -11,6 +11,9 @@ import com.kandm.controllers.Controller;
 import com.kandm.controllers.HealthCheckController;
 import com.kandm.controllers.RestEndpoints;
 import com.kandm.controllers.S3Controller;
+import com.kandm.controllers.filters.BeforeFilter;
+import com.kandm.controllers.filters.SparkFilter;
+import com.kandm.controllers.filters.WebServerFilters;
 import com.kandm.controllers.routes.GetRoute;
 import com.kandm.controllers.routes.PutRoute;
 import com.kandm.controllers.routes.SimpleHealthCheckRoute;
@@ -50,6 +53,14 @@ public class App {
         }
 
         port(appProperties.httpPort());
+
+        // Initialize Web server filters
+        WebServerFilters webServerFilters = new WebServerFilters(
+                new SparkFilter[]{
+                        new BeforeFilter(appProperties.secretToken())
+                }
+        );
+        webServerFilters.start();
 
         S3Service s3Service = new S3Service(
                 new AmazonS3Client(

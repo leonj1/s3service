@@ -1,6 +1,5 @@
 package com.kandm.controllers.routes;
 
-import com.kandm.App;
 import com.kandm.services.S3Service;
 import com.kandm.services.SimpleExitRoute;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import spark.utils.StringUtils;
  * Created by Jose M Leon 2018
  **/
 public class PutRoute implements Route {
-    private static final Logger log = LoggerFactory.getLogger(App.class);
+    private static final Logger log = LoggerFactory.getLogger(PutRoute.class);
     private final S3Service s3Service;
 
     public PutRoute(S3Service s3Service) {
@@ -33,9 +32,7 @@ public class PutRoute implements Route {
                     fileName,
                     contents
             );
-            return SimpleExitRoute.builder(res)
-                    .OK_200()
-                    .text("uploaded");
+            return SimpleExitRoute.builder(res).OK_200().text("uploaded");
         } catch (Exception e) {
             String msg = String.format(
                     "Problem uploading %s/%s",
@@ -44,7 +41,9 @@ public class PutRoute implements Route {
             );
             log.error(msg);
             e.printStackTrace();
-            return SimpleExitRoute.builder(res).INTERNAL_SERVER_ERROR_500().text(msg);
+            return SimpleExitRoute.builder(res)
+                    .INTERNAL_SERVER_ERROR_500()
+                    .text(e.getMessage());
         }
     }
 
@@ -56,7 +55,7 @@ public class PutRoute implements Route {
         if(StringUtils.isEmpty(site) || StringUtils.isEmpty(path) || StringUtils.isEmpty(fileName)) {
             return SimpleExitRoute.builder(response)
                     .BAD_REQUEST_400()
-                    .text("site, path, and file need to be provided as query params");
+                    .text("token, site, path, and file need to be provided as query params");
         }
         return execute(response, request.bodyAsBytes(), site, path, fileName);
     }

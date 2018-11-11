@@ -45,6 +45,12 @@
             <version>1.10.77</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
         <!-- REST API -->
         <dependency>
             <groupId>com.sparkjava</groupId>

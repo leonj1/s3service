@@ -31,4 +31,12 @@ public class AppProperties {
     public String secretToken() throws PropertiesFileNotFoundException, IOException {
         return this.getProperty.value("super.secret.token");
     }
+
+    public String profile() throws PropertiesFileNotFoundException, IOException {
+        return this.getProperty.value("app.profile");
+    }
+
+    public String awsS3Endpoint() throws PropertiesFileNotFoundException, IOException {
+        return this.getProperty.value("aws.s3.endpoint");
+    }
 }

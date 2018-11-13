@@ -49,7 +49,7 @@ public class GetRoute implements Route {
 
             res.status(HttpStatus.OK_200);
             return res.raw();
-        } catch (IOException e) {
+        } catch (Exception e) {
             String msg = String.format("Problem fetching %s/%s/%s. Error: %s", site, path, fileName, e.getMessage());
             log.error(msg);
             e.printStackTrace();

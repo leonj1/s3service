@@ -34,7 +34,7 @@ public class MyMinioClient implements S3Client {
         this.minioClient.putObject(
                 bucketName,
                 key,
-                outputFile.getName()
+                outputFile.getPath()
         );
     }
 }

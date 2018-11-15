@@ -2,6 +2,7 @@ package com.kandm.services;
 
 import com.kandm.clients.S3Client;
 import com.kandm.exceptions.ErrorCreatingTempFile;
+import com.kandm.exceptions.ProblemWritingToS3;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,14 +26,19 @@ public class S3Service {
         return this.s3Client.getObject(bucketName, key);
     }
 
-    public void uploadS3Object(String bucketName, String key, byte[] contents) throws ErrorCreatingTempFile, IOException {
-        File outputFile = File.createTempFile(key, ".png");
+    public void uploadS3Object(String bucketName, String key, byte[] contents) throws ErrorCreatingTempFile, IOException, ProblemWritingToS3 {
+        File outputFile = File.createTempFile(key, "");
         try (FileOutputStream outputStream = new FileOutputStream(outputFile) ) {
             outputStream.write(contents);  //write the bytes and your done.
-            this.s3Client.putObject(bucketName, key, outputFile);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ErrorCreatingTempFile(e.getMessage());
+        }
+        try {
+            this.s3Client.putObject(bucketName, key, outputFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ProblemWritingToS3("problem writing to S3");
         }
     }
 }

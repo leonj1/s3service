@@ -5,8 +5,10 @@ import com.kandm.exceptions.ErrorCreatingTempFile;
 import com.kandm.exceptions.ProblemWritingToS3;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created for K and M Consulting LLC.
@@ -28,12 +30,8 @@ public class S3Service {
 
     public void uploadS3Object(String bucketName, String key, byte[] contents) throws ErrorCreatingTempFile, IOException, ProblemWritingToS3 {
         File outputFile = File.createTempFile(key, "");
-        try (FileOutputStream outputStream = new FileOutputStream(outputFile) ) {
-            outputStream.write(contents);  //write the bytes and your done.
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ErrorCreatingTempFile(e.getMessage());
-        }
+        Path p = Paths.get(outputFile.getPath());
+        Files.write(p, contents);
         try {
             this.s3Client.putObject(bucketName, key, outputFile);
         } catch (Exception e) {

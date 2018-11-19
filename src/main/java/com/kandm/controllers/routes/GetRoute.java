@@ -1,6 +1,5 @@
 package com.kandm.controllers.routes;
 
-import com.amazonaws.util.IOUtils;
 import com.google.common.net.MediaType;
 import com.kandm.services.S3Service;
 import com.kandm.services.SimpleExitRoute;
@@ -12,8 +11,7 @@ import spark.Response;
 import spark.Route;
 import spark.utils.StringUtils;
 
-import javax.servlet.ServletOutputStream;
-import java.io.FileInputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -31,24 +29,31 @@ public class GetRoute implements Route {
     private Object execute(Response res, String site, String path, String fileName) {
         try {
             byte[] file = this.s3Service.readS3ObjectUsingByteArray(
+                    site,
                     String.format(
                             "%s/%s",
-                            site,
-                            path
-                    ),
-                    fileName
+                            path,
+                            fileName
+                    )
             );
+
             res.header("Content-Type", "image/png");
             res.type(MediaType.ANY_IMAGE_TYPE.toString());
             res.raw().setContentLength(file.length);
-            final ServletOutputStream os = res.raw().getOutputStream();
-            final FileInputStream in = new FileInputStream(fileName);
-            IOUtils.copy(in, os);
-            in.close();
-            os.close();
 
-            res.status(HttpStatus.OK_200);
-            return res.raw();
+            try {
+                HttpServletResponse raw = res.raw();
+                raw.getOutputStream().write(file);
+                raw.getOutputStream().flush();
+                raw.getOutputStream().close();
+                res.status(HttpStatus.OK_200);
+                return res.raw();
+            } catch (IOException e) {
+                res.status(HttpStatus.INTERNAL_SERVER_ERROR_500);
+                log.error(String.format("Problem creating generic resize of image for site %s, filename %s. Error: %s", site, fileName, e.getMessage()));
+                return file;
+            }
+
         } catch (Exception e) {
             String msg = String.format("Problem fetching %s/%s/%s. Error: %s", site, path, fileName, e.getMessage());
             log.error(msg);

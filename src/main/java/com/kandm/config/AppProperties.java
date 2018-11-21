@@ -37,6 +37,6 @@ public class AppProperties {
     }
 
     public String awsS3Endpoint() throws PropertiesFileNotFoundException, IOException {
-        return this.getProperty.value("aws.s3.endpoint");
+        return this.getProperty.value("s3.endpoint");
     }
 }

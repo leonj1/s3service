@@ -36,4 +36,17 @@ public class AmazonClient implements S3Client {
     public void putObject(String bucketName, String key, File outputFile) throws Exception {
         conn.putObject(new PutObjectRequest(bucketName, key, outputFile));
     }
+
+    @Override
+    public boolean exists(String bucketName, String key) throws Exception {
+        return conn.doesObjectExist(bucketName, key);
+    }
+
+    @Override
+    public void deleteObject(String bucketName, String key) throws Exception {
+        if(!exists(bucketName, key)) {
+            return;
+        }
+        conn.deleteObject(bucketName, key);
+    }
 }

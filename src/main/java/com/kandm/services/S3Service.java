@@ -39,4 +39,8 @@ public class S3Service {
             throw new ProblemWritingToS3("problem writing to S3");
         }
     }
+
+    public void deleteS3Object(String bucketName, String key) throws Exception {
+        this.s3Client.deleteObject(bucketName, key);
+    }
 }

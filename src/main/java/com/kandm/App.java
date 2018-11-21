@@ -17,6 +17,7 @@ import com.kandm.controllers.S3Controller;
 import com.kandm.controllers.filters.BeforeFilter;
 import com.kandm.controllers.filters.SparkFilter;
 import com.kandm.controllers.filters.WebServerFilters;
+import com.kandm.controllers.routes.DeleteRoute;
 import com.kandm.controllers.routes.GetRoute;
 import com.kandm.controllers.routes.PutRoute;
 import com.kandm.controllers.routes.SimpleHealthCheckRoute;
@@ -92,7 +93,8 @@ public class App {
                 new Controller[]{
                         new S3Controller(
                                 new GetRoute(s3Service),
-                                new PutRoute(s3Service)
+                                new PutRoute(s3Service),
+                                new DeleteRoute(s3Service)
                         ),
                         new HealthCheckController(
                                 new SimpleHealthCheckRoute()
@@ -100,6 +102,5 @@ public class App {
                 }
         );
         restEndpoints.start();
-
     }
 }

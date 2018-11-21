@@ -18,6 +18,24 @@ public class MyMinioClient implements S3Client {
     }
 
     @Override
+    public void deleteObject(String bucketName, String key) throws Exception {
+        if(!exists(bucketName, key)) {
+            return;
+        }
+        minioClient.removeObject(bucketName, key);
+    }
+
+    @Override
+    public boolean exists(String bucketName, String key) throws Exception {
+        try {
+            minioClient.statObject(bucketName, key);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public byte[] getObject(String bucketName, String key) throws Exception {
         InputStream stream = this.minioClient.getObject(
                 bucketName,

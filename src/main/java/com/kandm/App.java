@@ -6,6 +6,9 @@ import com.josemleon.CommandlineParser;
 import com.josemleon.GetEffectiveProperty;
 import com.josemleon.GetProperty;
 import com.josemleon.Parser;
+import com.kandm.clients.AmazonClient;
+import com.kandm.clients.MyMinioClient;
+import com.kandm.clients.S3Client;
 import com.kandm.config.AppProperties;
 import com.kandm.controllers.Controller;
 import com.kandm.controllers.HealthCheckController;
@@ -14,10 +17,12 @@ import com.kandm.controllers.S3Controller;
 import com.kandm.controllers.filters.BeforeFilter;
 import com.kandm.controllers.filters.SparkFilter;
 import com.kandm.controllers.filters.WebServerFilters;
+import com.kandm.controllers.routes.DeleteRoute;
 import com.kandm.controllers.routes.GetRoute;
 import com.kandm.controllers.routes.PutRoute;
 import com.kandm.controllers.routes.SimpleHealthCheckRoute;
 import com.kandm.services.S3Service;
+import io.minio.MinioClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,20 +67,34 @@ public class App {
         );
         webServerFilters.start();
 
-        S3Service s3Service = new S3Service(
-                new AmazonS3Client(
-                        new BasicAWSCredentials(
-                                appProperties.getSesKey(),
-                                appProperties.getSesSecret()
-                        )
-                )
-        );
+        S3Client s3Client = null;
+        if("prod".equals(appProperties.profile())) {
+            s3Client = new AmazonClient(
+                    new AmazonS3Client(
+                            new BasicAWSCredentials(
+                                    appProperties.getSesKey(),
+                                    appProperties.getSesSecret()
+                            )
+                    )
+            );
+        } else {
+            s3Client = new MyMinioClient(
+                    new MinioClient(
+                            appProperties.awsS3Endpoint(),
+                            appProperties.getSesKey(),
+                            appProperties.getSesSecret()
+                    )
+            );
+        }
+
+        S3Service s3Service = new S3Service(s3Client);
 
         RestEndpoints restEndpoints = new RestEndpoints(
                 new Controller[]{
                         new S3Controller(
                                 new GetRoute(s3Service),
-                                new PutRoute(s3Service)
+                                new PutRoute(s3Service),
+                                new DeleteRoute(s3Service)
                         ),
                         new HealthCheckController(
                                 new SimpleHealthCheckRoute()
@@ -83,6 +102,5 @@ public class App {
                 }
         );
         restEndpoints.start();
-
     }
 }

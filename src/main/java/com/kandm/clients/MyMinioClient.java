@@ -12,23 +12,25 @@ import java.io.InputStream;
  **/
 public class MyMinioClient implements S3Client {
     private MinioClient minioClient;
+    private String bucketName;
 
-    public MyMinioClient(MinioClient minioClient) {
+    public MyMinioClient(MinioClient minioClient, String bucketName) {
         this.minioClient = minioClient;
+        this.bucketName = bucketName;
     }
 
     @Override
-    public void deleteObject(String bucketName, String key) throws Exception {
-        if(!exists(bucketName, key)) {
+    public void deleteObject(String key) throws Exception {
+        if(!exists(key)) {
             return;
         }
-        minioClient.removeObject(bucketName, key);
+        minioClient.removeObject(this.bucketName, key);
     }
 
     @Override
-    public boolean exists(String bucketName, String key) throws Exception {
+    public boolean exists(String key) throws Exception {
         try {
-            minioClient.statObject(bucketName, key);
+            minioClient.statObject(this.bucketName, key);
         } catch (Exception e) {
             return false;
         }
@@ -36,9 +38,9 @@ public class MyMinioClient implements S3Client {
     }
 
     @Override
-    public byte[] getObject(String bucketName, String key) throws Exception {
+    public byte[] getObject(String key) throws Exception {
         InputStream stream = this.minioClient.getObject(
-                bucketName,
+                this.bucketName,
                 key
         );
 
@@ -48,9 +50,9 @@ public class MyMinioClient implements S3Client {
     }
 
     @Override
-    public void putObject(String bucketName, String key, File outputFile) throws Exception {
+    public void putObject(String key, File outputFile) throws Exception {
         this.minioClient.putObject(
-                bucketName,
+                this.bucketName,
                 key,
                 outputFile.getPath()
         );

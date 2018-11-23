@@ -24,9 +24,9 @@ public class PutRoute implements Route {
     private Object execute(Response res, byte[] contents, String site, String path, String fileName) {
         try {
             this.s3Service.uploadS3Object(
-                    site,
                     String.format(
-                            "%s/%s",
+                            "%s/%s/%s",
+                            site,
                             path,
                             fileName
                     ),

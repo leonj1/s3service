@@ -21,9 +21,9 @@ public class DeleteRoute implements Route {
     private String execute(Response res, String site, String path, String fileName) {
         try {
             this.s3Service.deleteS3Object(
-                    site,
                     String.format(
-                            "%s/%s",
+                            "%s/%s/%s",
+                            site,
                             path,
                             fileName
                     )

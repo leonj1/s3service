@@ -75,7 +75,8 @@ public class App {
                                     appProperties.getSesKey(),
                                     appProperties.getSesSecret()
                             )
-                    )
+                    ),
+                    appProperties.s3BucketName()
             );
         } else {
             s3Client = new MyMinioClient(
@@ -83,7 +84,8 @@ public class App {
                             appProperties.awsS3Endpoint(),
                             appProperties.getSesKey(),
                             appProperties.getSesSecret()
-                    )
+                    ),
+                    appProperties.s3BucketName()
             );
         }
 

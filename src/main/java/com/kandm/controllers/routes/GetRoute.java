@@ -29,9 +29,9 @@ public class GetRoute implements Route {
     private Object execute(Response res, String site, String path, String fileName) {
         try {
             byte[] file = this.s3Service.readS3ObjectUsingByteArray(
-                    site,
                     String.format(
-                            "%s/%s",
+                            "%s/%s/%s",
+                            site,
                             path,
                             fileName
                     )

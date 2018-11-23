@@ -7,8 +7,8 @@ import java.io.File;
  * Created by Jose M Leon 2018
  **/
 public interface S3Client {
-    byte[] getObject(String bucketName, String key) throws Exception;
-    void putObject(String bucketName, String key, File outputFile) throws Exception;
-    void deleteObject(String bucketName, String key) throws Exception;
-    boolean exists(String bucketName, String key) throws Exception;
+    byte[] getObject(String key) throws Exception;
+    void putObject(String key, File outputFile) throws Exception;
+    void deleteObject(String key) throws Exception;
+    boolean exists(String key) throws Exception;
 }

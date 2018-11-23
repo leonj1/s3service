@@ -24,23 +24,23 @@ public class S3Service {
     /**
      * Read a binary file from S3
      */
-    public byte[] readS3ObjectUsingByteArray(String bucketName, String key) throws Exception {
-        return this.s3Client.getObject(bucketName, key);
+    public byte[] readS3ObjectUsingByteArray(String key) throws Exception {
+        return this.s3Client.getObject(key);
     }
 
-    public void uploadS3Object(String bucketName, String key, byte[] contents) throws ErrorCreatingTempFile, IOException, ProblemWritingToS3 {
+    public void uploadS3Object(String key, byte[] contents) throws ErrorCreatingTempFile, IOException, ProblemWritingToS3 {
         File outputFile = File.createTempFile(key, "");
         Path p = Paths.get(outputFile.getPath());
         Files.write(p, contents);
         try {
-            this.s3Client.putObject(bucketName, key, outputFile);
+            this.s3Client.putObject(key, outputFile);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ProblemWritingToS3("problem writing to S3");
         }
     }
 
-    public void deleteS3Object(String bucketName, String key) throws Exception {
-        this.s3Client.deleteObject(bucketName, key);
+    public void deleteS3Object(String key) throws Exception {
+        this.s3Client.deleteObject(key);
     }
 }

@@ -16,22 +16,24 @@ import java.io.File;
 public class AmazonClient implements S3Client {
     private static final Logger log = LoggerFactory.getLogger(S3Client.class);
     private AmazonS3 conn;
+    private String bucketName;
 
-    public AmazonClient(AmazonS3 conn) {
+    public AmazonClient(AmazonS3 conn, String bucketName) {
         this.conn = conn;
+        this.bucketName = bucketName;
     }
 
     @Override
-    public byte[] getObject(String bucketName, String key) throws Exception {
+    public byte[] getObject(String key) throws Exception {
         log.info(String.format(
                 "Attempting to fetch bucket %s key %s",
-                bucketName,
+                this.bucketName,
                 key
         ));
         return IOUtils.readFully(
                 conn.getObject(
                         new GetObjectRequest(
-                                bucketName,
+                                this.bucketName,
                                 key
                         )
                 ).getObjectContent(),
@@ -41,33 +43,33 @@ public class AmazonClient implements S3Client {
     }
 
     @Override
-    public void putObject(String bucketName, String key, File outputFile) throws Exception {
+    public void putObject(String key, File outputFile) throws Exception {
         log.info(String.format(
                 "Attempting to put bucket %s key %s",
-                bucketName,
+                this.bucketName,
                 key
         ));
-        conn.putObject(new PutObjectRequest(bucketName, key, outputFile));
+        conn.putObject(new PutObjectRequest(this.bucketName, key, outputFile));
     }
 
     @Override
-    public boolean exists(String bucketName, String key) throws Exception {
-        return conn.doesObjectExist(bucketName, key);
+    public boolean exists(String key) throws Exception {
+        return conn.doesObjectExist(this.bucketName, key);
     }
 
     @Override
-    public void deleteObject(String bucketName, String key) throws Exception {
-        if(!exists(bucketName, key)) {
+    public void deleteObject(String key) throws Exception {
+        if(!exists(key)) {
             log.info(String.format(
                     "Does not exist: bucket %s key %s",
-                    bucketName,
+                    this.bucketName,
                     key
             ));
             return;
         }
         log.info(String.format(
                 "Deleting bucket %s key %s",
-                bucketName,
+                this.bucketName,
                 key
         ));
         conn.deleteObject(bucketName, key);
